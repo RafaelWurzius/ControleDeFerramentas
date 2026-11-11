@@ -1,0 +1,673 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Cadastro de Defeito</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Dados das ferramentas para o autocomplete -->
+    <div
+        id="dados-ferramentas"
+        data-ferramentas='{{ ferramentas | tojson }}'>
+    </div>
+
+    <div class="container">
+
+        <div class="cadastro-layout">
+
+            <!-- ==========================================
+                 FORMULÁRIO DE CADASTRO
+            =========================================== -->
+            <div class="card">
+
+                <div class="header">
+                    <div class="icon">⚙️</div>
+
+                    <div>
+                        <h1>Cadastro de Defeito</h1>
+                        <p>Registre as informações do defeito encontrado</p>
+                    </div>
+                </div>
+
+                <!-- Mensagens de sucesso e erro -->
+                {% with mensagens = get_flashed_messages(with_categories=true) %}
+                    {% if mensagens %}
+                        {% for categoria, mensagem in mensagens %}
+                            <div class="alert {{ categoria }}">
+                                <span class="alert-icon">
+                                    {% if categoria == "success" %}
+                                        ✓
+                                    {% else %}
+                                        !
+                                    {% endif %}
+                                </span>
+
+                                <span>{{ mensagem }}</span>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+
+                <form
+                    action="{{ url_for('adicionar') }}"
+                    method="POST"
+                    enctype="multipart/form-data">
+
+                    <!-- Ferramenta -->
+                    <div class="form-group">
+
+                        <label for="ferramenta">Ferramenta</label>
+
+                        <div class="autocomplete">
+
+                            <input
+                                type="text"
+                                id="ferramenta"
+                                name="ferramenta"
+                                placeholder="Digite o nome da ferramenta..."
+                                autocomplete="off"
+                                required>
+
+                            <div
+                                id="lista-ferramentas"
+                                class="autocomplete-list">
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <!-- Descrição -->
+                    <div class="form-group">
+
+                        <label for="descricao">Descrição do defeito</label>
+
+                        <textarea
+                            id="descricao"
+                            name="descricao"
+                            placeholder="Descreva detalhadamente o defeito encontrado..."
+                            rows="5"
+                            required></textarea>
+
+                    </div>
+
+                    <!-- Evidência fotográfica -->
+                    <div class="form-group">
+
+                        <label for="evidencia">Evidência (foto)</label>
+
+                        <div class="upload-area">
+
+                            <!-- Selecionar imagem dos arquivos -->
+                            <input
+                                type="file"
+                                id="evidencia"
+                                name="evidencia"
+                                accept="image/png, image/jpeg, image/webp"
+                                hidden>
+
+                            <!-- Capturar foto pela câmera -->
+                            <input
+                                type="file"
+                                id="evidencia-camera"
+                                name="evidencia_camera"
+                                accept="image/*"
+                                capture="environment"
+                                hidden>
+
+                            <div class="evidence-actions">
+
+                                <button
+                                    type="button"
+                                    id="btn-arquivos"
+                                    class="btn-evidencia">
+                                    📁 Selecionar dos arquivos
+                                </button>
+
+                                <button
+                                    type="button"
+                                    id="btn-camera"
+                                    class="btn-evidencia">
+                                    📷 Tirar foto
+                                </button>
+
+                            </div>
+
+                            <div
+                                class="upload-label"
+                                id="upload-label">
+
+                                <div id="upload-content">
+
+                                    <span class="upload-icon">📷</span>
+
+                                    <span class="upload-title">
+                                        Selecione ou tire uma foto
+                                    </span>
+
+                                    <span class="upload-description">
+                                        PNG, JPG, JPEG ou WEBP — máximo 10 MB
+                                    </span>
+
+                                </div>
+
+                                <img
+                                    id="preview"
+                                    class="preview"
+                                    src=""
+                                    alt="Pré-visualização da foto">
+
+                                <button
+                                    type="button"
+                                    id="remove-image"
+                                    class="remove-image">
+                                    ×
+                                </button>
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Ciclo e data -->
+                    <div class="form-row">
+
+                        <div class="form-group">
+                            <label for="ciclo">Ciclo</label>
+
+                            <input
+                                type="number"
+                                id="ciclo"
+                                name="ciclo"
+                                placeholder="Ex.: 10"
+                                min="0"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data">Data</label>
+
+                            <input
+                                type="date"
+                                id="data"
+                                name="data"
+                                required>
+                        </div>
+
+                    </div>
+
+                    <!-- Situação da manutenção -->
+                    <div class="form-group">
+
+                        <label for="em_manutencao">Em manutenção?</label>
+
+                        <select
+                            id="em_manutencao"
+                            name="em_manutencao"
+                            required>
+
+                            <option value="false" selected>Não</option>
+                            <option value="true">Sim</option>
+
+                        </select>
+                    </div>
+
+                    <!-- Botões -->
+                    <div class="form-actions">
+
+                        <a
+                            href="{{ url_for('manutencao') }}"
+                            class="botao-registros">
+                            Ver ferramentas em manutenção
+                        </a>
+
+                        <a
+                            href="{{ url_for('registros') }}"
+                            class="botao-registros">
+                            Ver registros
+                        </a>
+
+                        <button
+                            type="reset"
+                            class="btn btn-secondary"
+                            id="btn-limpar">
+                            Limpar
+                        </button>
+
+                        <button
+                            type="submit"
+                            class="btn btn-primary">
+                            <span>✓</span>
+                            Cadastrar defeito
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </div>
+
+            <!-- ==========================================
+                 PAINEL DO ÚLTIMO REGISTRO
+            =========================================== -->
+            <aside
+                class="painel-ultimo-registro"
+                id="painel-ultimo-registro">
+
+                <h2>Último registro da ferramenta</h2>
+
+                <p class="painel-ajuda">
+                    Digite ou selecione uma ferramenta para consultar
+                    automaticamente seu último registro.
+                </p>
+
+                <div id="ultimo-registro-conteudo">
+
+                    <div class="registro-placeholder">
+                        <span class="registro-placeholder-icone">🔎</span>
+
+                        <p>
+                            O último registro será exibido aqui.
+                        </p>
+                    </div>
+
+                </div>
+
+            </aside>
+
+        </div>
+    </div>
+
+    <script>
+        // ================================================
+        // DADOS DAS FERRAMENTAS
+        // ================================================
+
+        const dadosFerramentas = document.getElementById("dados-ferramentas");
+
+        const listaDeFerramentas = JSON.parse(
+            dadosFerramentas.dataset.ferramentas
+        );
+
+        const inputFerramenta = document.getElementById("ferramenta");
+        const listaFerramentas = document.getElementById("lista-ferramentas");
+
+        // ================================================
+        // AUTOCOMPLETE
+        // ================================================
+
+        inputFerramenta.addEventListener("input", function () {
+
+            const texto = inputFerramenta.value.trim().toLowerCase();
+
+            listaFerramentas.innerHTML = "";
+
+            if (texto === "") {
+                listaFerramentas.style.display = "none";
+                return;
+            }
+
+            const resultados = listaDeFerramentas.filter(function (ferramenta) {
+                return ferramenta.toLowerCase().includes(texto);
+            });
+
+            if (resultados.length === 0) {
+                listaFerramentas.style.display = "none";
+                return;
+            }
+
+            resultados.forEach(function (ferramenta) {
+
+                const item = document.createElement("div");
+
+                item.classList.add("autocomplete-item");
+                item.textContent = ferramenta;
+
+                item.addEventListener("click", function () {
+
+                    inputFerramenta.value = ferramenta;
+
+                    listaFerramentas.innerHTML = "";
+                    listaFerramentas.style.display = "none";
+
+                    // Consulta o histórico ao selecionar uma opção.
+                    buscarUltimoRegistro();
+                });
+
+                listaFerramentas.appendChild(item);
+            });
+
+            listaFerramentas.style.display = "block";
+        });
+
+        document.addEventListener("click", function (event) {
+
+            if (!event.target.closest(".autocomplete")) {
+                listaFerramentas.innerHTML = "";
+                listaFerramentas.style.display = "none";
+            }
+        });
+
+        // ================================================
+        // CONSULTA DO ÚLTIMO REGISTRO
+        // ================================================
+
+        const conteudoUltimoRegistro = document.getElementById(
+            "ultimo-registro-conteudo"
+        );
+
+        let consultaAtual = 0;
+        let temporizadorConsulta;
+
+        function escaparHTML(valor) {
+            return String(valor ?? "").replace(/[&<>"']/g, caractere => ({
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#39;"
+            })[caractere]);
+        }
+
+        function mostrarMensagemInicial(mensagem) {
+            conteudoUltimoRegistro.innerHTML = `
+                <div class="registro-placeholder">
+                    <span class="registro-placeholder-icone">🔎</span>
+                    <p>${escaparHTML(mensagem)}</p>
+                </div>`;
+        }
+
+        async function buscarUltimoRegistro() {
+
+            const nome = inputFerramenta.value.trim();
+            const numeroConsulta = ++consultaAtual;
+
+            if (!nome) {
+                mostrarMensagemInicial(
+                    "Digite o nome de uma ferramenta para consultar."
+                );
+                return;
+            }
+
+            conteudoUltimoRegistro.innerHTML =
+                '<p class="registro-carregando">Consultando registros...</p>';
+
+            try {
+
+                const resposta = await fetch(
+                    `/ultimo-registro/${encodeURIComponent(nome)}`
+                );
+
+                const dados = await resposta.json();
+
+                // Evita mostrar a resposta de uma pesquisa anterior.
+                if (numeroConsulta !== consultaAtual) {
+                    return;
+                }
+
+                if (!resposta.ok || dados.erro) {
+                    throw new Error("Não foi possível consultar o registro.");
+                }
+
+                if (!dados.encontrado) {
+                    mostrarMensagemInicial(
+                        "Esta ferramenta ainda não possui registros anteriores."
+                    );
+                    return;
+                }
+
+                const descricao =
+                    escaparHTML(dados.descricao) || "Não informada";
+
+                const ciclo =
+                    escaparHTML(dados.ciclo) || "Não informado";
+
+                const data =
+                    escaparHTML(dados.data) || "Não informada";
+
+                const status = dados.em_manutencao
+                    ? "Sim — em manutenção"
+                    : "Não está em manutenção";
+
+                const foto = dados.foto
+                    ? `<img
+                           class="foto-ultimo-registro"
+                           src="{{ url_for('static', filename='uploads/') }}${encodeURIComponent(dados.foto)}"
+                           alt="Foto do último registro"
+                           onerror="this.style.display='none'">`
+                    : '<p class="sem-foto">Nenhuma foto registrada.</p>';
+
+                conteudoUltimoRegistro.innerHTML = `
+                    <div class="registro-detalhes">
+
+                        <span class="registro-id">
+                            Registro #${escaparHTML(dados.id)}
+                        </span>
+
+                        <h3>${escaparHTML(dados.ferramenta)}</h3>
+
+                        <div class="registro-campo">
+                            <strong>Data</strong>
+                            <p>${data}</p>
+                        </div>
+
+                        <div class="registro-campo">
+                            <strong>Descrição do defeito</strong>
+                            <p class="descricao-historico">${descricao}</p>
+                        </div>
+
+                        <div class="registro-campo">
+                            <strong>Ciclo</strong>
+                            <p>${ciclo}</p>
+                        </div>
+
+                        <div class="registro-campo">
+                            <strong>Em manutenção</strong>
+                            <p class="${dados.em_manutencao ? 'status-sim' : 'status-nao'}">
+                                ${status}
+                            </p>
+                        </div>
+
+                        <div class="registro-campo">
+                            <strong>Evidência fotográfica</strong>
+                            ${foto}
+                        </div>
+
+                    </div>`;
+            } catch (erro) {
+
+                if (numeroConsulta !== consultaAtual) {
+                    return;
+                }
+
+                conteudoUltimoRegistro.innerHTML = `
+                    <p class="erro-consulta">
+                        Não foi possível consultar o registro.
+                        Verifique a conexão com o servidor.
+                    </p>`;
+
+                console.error("Erro ao consultar o último registro:", erro);
+            }
+        }
+
+        // Consulta enquanto o usuário digita, com pequeno intervalo.
+        inputFerramenta.addEventListener("input", function () {
+
+            clearTimeout(temporizadorConsulta);
+
+            temporizadorConsulta = setTimeout(
+                buscarUltimoRegistro,
+                300
+            );
+        });
+
+        // Também consulta ao sair do campo.
+        inputFerramenta.addEventListener("change", buscarUltimoRegistro);
+
+        // ================================================
+        // EVIDÊNCIA
+        // ================================================
+
+        const inputFoto = document.getElementById("evidencia");
+        const inputCamera = document.getElementById("evidencia-camera");
+
+        const btnArquivos = document.getElementById("btn-arquivos");
+        const btnCamera = document.getElementById("btn-camera");
+
+        const preview = document.getElementById("preview");
+        const uploadContent = document.getElementById("upload-content");
+        const removeImage = document.getElementById("remove-image");
+        const uploadLabel = document.getElementById("upload-label");
+
+        let urlPreview = null;
+
+        btnArquivos.addEventListener("click", function () {
+            inputFoto.click();
+        });
+
+        btnCamera.addEventListener("click", function () {
+            inputCamera.click();
+        });
+
+        function mostrarFoto(arquivo, inputSelecionado) {
+
+            if (!arquivo) {
+                return;
+            }
+
+            if (!arquivo.type.startsWith("image/")) {
+                alert("Selecione uma imagem válida.");
+                inputSelecionado.value = "";
+                return;
+            }
+
+            const tamanhoMaximo = 10 * 1024 * 1024;
+
+            if (arquivo.size > tamanhoMaximo) {
+                alert("A imagem deve ter no máximo 10 MB.");
+                inputSelecionado.value = "";
+                return;
+            }
+
+            const outroInput = inputSelecionado === inputFoto
+                ? inputCamera
+                : inputFoto;
+
+            outroInput.value = "";
+
+            if (urlPreview) {
+                URL.revokeObjectURL(urlPreview);
+                urlPreview = null;
+            }
+
+            urlPreview = URL.createObjectURL(arquivo);
+
+            preview.src = urlPreview;
+            preview.style.display = "block";
+
+            uploadContent.style.display = "none";
+            removeImage.style.display = "flex";
+
+            uploadLabel.classList.add("has-image");
+        }
+
+        inputFoto.addEventListener("change", function () {
+            mostrarFoto(inputFoto.files[0], inputFoto);
+        });
+
+        inputCamera.addEventListener("change", function () {
+            mostrarFoto(inputCamera.files[0], inputCamera);
+        });
+
+        removeImage.addEventListener("click", function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            inputFoto.value = "";
+            inputCamera.value = "";
+
+            preview.src = "";
+            preview.style.display = "none";
+
+            if (urlPreview) {
+                URL.revokeObjectURL(urlPreview);
+                urlPreview = null;
+            }
+
+            removeImage.style.display = "none";
+            uploadContent.style.display = "flex";
+
+            uploadLabel.classList.remove("has-image");
+        });
+
+        // ================================================
+        // BOTÃO LIMPAR
+        // ================================================
+
+        document.getElementById("btn-limpar").addEventListener(
+            "click",
+            function () {
+
+                // O reset nativo ocorre depois deste evento.
+                setTimeout(function () {
+
+                    inputFoto.value = "";
+                    inputCamera.value = "";
+
+                    preview.src = "";
+                    preview.style.display = "none";
+
+                    if (urlPreview) {
+                        URL.revokeObjectURL(urlPreview);
+                        urlPreview = null;
+                    }
+
+                    removeImage.style.display = "none";
+                    uploadContent.style.display = "flex";
+
+                    uploadLabel.classList.remove("has-image");
+
+                    listaFerramentas.innerHTML = "";
+                    listaFerramentas.style.display = "none";
+
+                    clearTimeout(temporizadorConsulta);
+                    consultaAtual++;
+
+                    mostrarMensagemInicial(
+                        "O último registro será exibido aqui."
+                    );
+
+                }, 0);
+            }
+        );
+
+        // ================================================
+        // OCULTAR MENSAGENS FLASH
+        // ================================================
+
+        setTimeout(function () {
+
+            const alertas = document.querySelectorAll(".alert");
+
+            alertas.forEach(function (alerta) {
+
+                alerta.style.opacity = "0";
+                alerta.style.transform = "translateY(-10px)";
+
+                setTimeout(function () {
+                    alerta.remove();
+                }, 300);
+            });
+
+        }, 3000);
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,187 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='manutencao.css') }}">
+    <title>Ferramentas em Manutenção</title>
+
+    <!-- <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 24px;
+            background: #f4f6f8;
+            color: #222;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        .acoes {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .botao {
+            display: inline-block;
+            padding: 10px 14px;
+            border: 0;
+            border-radius: 6px;
+            background: #1f5f99;
+            color: white;
+            text-decoration: none;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .botao-concluir {
+            background: #277746;
+        }
+
+        .tabela-container {
+            overflow-x: auto;
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+            vertical-align: middle;
+        }
+
+        th {
+            background: #e9eef3;
+        }
+
+        .foto {
+            max-width: 110px;
+            max-height: 90px;
+            object-fit: contain;
+        }
+
+        .vazio {
+            padding: 24px;
+            text-align: center;
+            color: #555;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 12px;
+            }
+        }
+    </style> -->
+</head>
+
+<body>
+    <main class="container">
+        <h1>Ferramentas em Manutenção</h1>
+
+        <p>
+            Esta página exibe somente os registros que estão
+            marcados como em manutenção.
+        </p>
+
+        <div class="acoes">
+            <a class="botao" href="{{ url_for('index') }}">
+                Voltar ao cadastro
+            </a>
+
+            <a class="botao" href="{{ url_for('registros') }}">
+                Ver todos os registros
+            </a>
+        </div>
+
+        {% if registros %}
+        <div class="tabela-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ferramenta</th>
+                        <th>Descrição</th>
+                        <th>Evidência</th>
+                        <th>Ciclo</th>
+                        <th>Data</th>
+                        <th>Status</th>
+                        <th>Ação</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for registro in registros %}
+                    <tr>
+                        <td>{{ registro[0] }}</td>
+                        <td>{{ registro[1] }}</td>
+                        <td>{{ registro[2] }}</td>
+
+                        <td>
+                            {% if registro[3] %}
+                            <a
+                                href="{{ url_for('static', filename='uploads/' ~ registro[3]) }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                <img
+                                    class="foto"
+                                    src="{{ url_for('static', filename='uploads/' ~ registro[3]) }}"
+                                    alt="Foto de evidência"
+                                >
+                            </a>
+                            {% else %}
+                            Sem foto
+                            {% endif %}
+                        </td>
+
+                        <td>{{ registro[4] or '-' }}</td>
+                        <td>{{ registro[5] or '-' }}</td>
+                        <td>Em manutenção</td>
+
+                        <td>
+                            <form
+                                method="POST"
+                                action="{{ url_for('alterar_manutencao', id=registro[0]) }}"
+                                onsubmit="return confirm('Confirmar que esta ferramenta saiu de manutenção?')"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="em_manutencao"
+                                    value="false"
+                                >
+
+                                <button
+                                    type="submit"
+                                    class="botao botao-concluir"
+                                >
+                                    Concluir manutenção
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="vazio">
+            <h2>Nenhuma ferramenta em manutenção</h2>
+            <p>Quando houver registros marcados como “Sim”, eles aparecerão aqui.</p>
+        </div>
+        {% endif %}
+    </main>
+</body>
+</html>

@@ -1,0 +1,294 @@
+
+/* =========================================================
+   CONFIGURAÇÕES GERAIS
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 24px;
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f8;
+    color: #252a31;
+}
+
+.container {
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+/* =========================================================
+   CABEÇALHO
+========================================================= */
+
+.cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 16px;
+    margin-bottom: 24px;
+}
+
+.cabecalho h1 {
+    margin: 0 0 8px;
+    font-size: 28px;
+    color: #1f2937;
+}
+
+.cabecalho p {
+    margin: 0;
+    color: #667085;
+    line-height: 1.5;
+}
+
+/* =========================================================
+   BOTÕES DE NAVEGAÇÃO
+========================================================= */
+
+.acoes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 24px;
+}
+
+.botao {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    background-color: #1f5f99;
+    color: #ffffff;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    transition:
+        background-color 0.2s ease,
+        transform 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+.botao:hover {
+    background-color: #174b7a;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12);
+}
+
+.botao:active {
+    transform: scale(0.98);
+}
+
+.botao-concluir {
+    background-color: #277746;
+}
+
+.botao-concluir:hover {
+    background-color: #1d5d35;
+}
+
+/* =========================================================
+   MENSAGENS FLASH DO FLASK
+========================================================= */
+
+.flash-messages {
+    margin-bottom: 20px;
+}
+
+.flash {
+    padding: 13px 16px;
+    margin-bottom: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+.flash.success {
+    color: #17633a;
+    background-color: #e4f6eb;
+    border: 1px solid #a9dfbd;
+}
+
+.flash.error {
+    color: #a52828;
+    background-color: #fdeaea;
+    border: 1px solid #f2b8b8;
+}
+
+/* =========================================================
+   ÁREA DA TABELA
+========================================================= */
+
+.tabela-container {
+    width: 100%;
+    overflow-x: auto;
+    background-color: #ffffff;
+    border: 1px solid #e1e5ea;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.04);
+}
+
+table {
+    width: 100%;
+    min-width: 1050px;
+    border-collapse: collapse;
+}
+
+thead {
+    background-color: #e9eef3;
+}
+
+th {
+    padding: 15px 12px;
+    color: #344054;
+    font-size: 13px;
+    font-weight: 700;
+    text-align: left;
+    white-space: nowrap;
+}
+
+td {
+    padding: 14px 12px;
+    border-top: 1px solid #eaecf0;
+    color: #344054;
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+/* =========================================================
+   STATUS DE MANUTENÇÃO
+========================================================= */
+
+.status-manutencao {
+    display: inline-block;
+    padding: 6px 10px;
+    border-radius: 20px;
+    background-color: #fff0d6;
+    color: #8a4b08;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+/* =========================================================
+   FOTOS DE EVIDÊNCIA
+========================================================= */
+
+.foto {
+    display: block;
+    width: auto;
+    max-width: 110px;
+    max-height: 85px;
+    object-fit: contain;
+    border: 1px solid #e1e5ea;
+    border-radius: 6px;
+    background-color: #ffffff;
+    transition: transform 0.2s ease;
+}
+
+a:has(.foto) {
+    display: inline-block;
+}
+
+a:has(.foto):hover .foto {
+    transform: scale(1.05);
+}
+
+/* =========================================================
+   FORMULÁRIO DE CONCLUSÃO
+========================================================= */
+
+.form-concluir {
+    margin: 0;
+}
+
+.form-concluir .botao {
+    white-space: nowrap;
+}
+
+/* =========================================================
+   ESTADO VAZIO
+========================================================= */
+
+.vazio {
+    padding: 50px 24px;
+    text-align: center;
+    background-color: #ffffff;
+    border: 1px solid #e1e5ea;
+    border-radius: 12px;
+}
+
+.vazio h2 {
+    margin: 0 0 12px;
+    color: #344054;
+    font-size: 22px;
+}
+
+.vazio p {
+    margin: 0;
+    color: #667085;
+    line-height: 1.6;
+}
+
+/* =========================================================
+   RESPONSIVIDADE
+========================================================= */
+
+@media (max-width: 768px) {
+    body {
+        padding: 16px;
+    }
+
+    .cabecalho {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cabecalho h1 {
+        font-size: 24px;
+    }
+
+    .acoes {
+        flex-direction: column;
+    }
+
+    .acoes .botao {
+        width: 100%;
+    }
+
+    .tabela-container {
+        border-radius: 8px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+
+    .cabecalho h1 {
+        font-size: 21px;
+    }
+
+    .vazio {
+        padding: 32px 16px;
+    }
+
+    .vazio h2 {
+        font-size: 19px;
+    }
+}

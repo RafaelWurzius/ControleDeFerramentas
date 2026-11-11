@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Registros de Defeitos</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='registros.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+    <header class="cabecalho">
+
+        <div class="cabecalho-conteudo">
+
+            <div>
+                <h1>CONTROLE DE FERRAMENTAS</h1>
+                <p>Registros de Defeitos</p>
+            </div>
+
+            <div class="botoes-acoes">
+
+                <!-- <a
+                    href="{{ url_for('baixar_registros') }}"
+                    class="botao-excel"
+                >
+                    ↓ Baixar Excel
+                </a> -->
+
+                <a
+                    href="{{ url_for(
+                        'baixar_registros',
+                        nome=nome,
+                        descricao=descricao,
+                        data=data
+                    ) }}"
+                    class="botao-excel"
+                >
+                    ↓ Baixar Excel
+                </a>
+
+                <a
+                    href="{{ url_for('index') }}"
+                    class="botao-voltar"
+                >
+                    ← Novo Registro
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <main class="container">
+
+        <div class="titulo-pagina">
+
+            <div>
+                <h2>Registros de Defeitos</h2>
+
+                <p>
+                    Consulte os defeitos registrados nas ferramentas.
+                </p>
+            </div>
+
+            <div class="contador">
+
+                <span>{{ registros|length }}</span>
+
+                registro{% if registros|length != 1 %}s{% endif %}
+
+            </div>
+
+        </div>
+
+
+        {% if registros %}
+
+        <!-- FILTROS DE PESQUISA -->
+        <form method="GET" action="{{ url_for('registros') }}" class="filtros-registros">
+
+            <div class="campo-filtro">
+                <label for="nome">Nome da ferramenta</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Pesquisar ferramenta..."
+                    value="{{ nome }}"
+                >
+            </div>
+
+            <div class="campo-filtro">
+                <label for="descricao">Descrição</label>
+                <input
+                    type="text"
+                    id="descricao"
+                    name="descricao"
+                    placeholder="Pesquisar descrição..."
+                    value="{{ descricao }}"
+                >
+            </div>
+
+            <div class="campo-filtro">
+                <label for="data">Data</label>
+                <input
+                    type="date"
+                    id="data"
+                    name="data"
+                    value="{{ data }}"
+                >
+            </div>
+
+            <div class="acoes-filtro">
+                <button type="submit">
+                    Pesquisar
+                </button>
+
+                <a href="{{ url_for('registros') }}" class="btn-limpar-filtros">
+                    Limpar filtros
+                </a>
+            </div>
+
+        </form>
+
+        <div class="tabela-container">
+
+            <table>
+
+                <thead>
+
+                    <tr>
+
+                        <th>ID</th>
+
+                        <th>Ferramenta</th>
+
+                        <th>Descrição</th>
+
+                        <th>Evidência</th>
+
+                        <th>Ciclo</th>
+
+                        <th>Data</th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    {% for registro in registros %}
+
+                    <tr>
+
+                        <td class="id">
+
+                            {{ registro[0] }}
+
+                        </td>
+
+
+                        <td class="ferramenta">
+
+                            {{ registro[1] }}
+
+                        </td>
+
+
+                        <td class="descricao">
+
+                            {{ registro[2] }}
+
+                        </td>
+
+
+                        <td class="evidencia">
+
+                            {% if registro[3] %}
+
+                            <img
+                                src="{{ url_for(
+                                    'static',
+                                    filename='uploads/' + registro[3]
+                                ) }}"
+                                alt="Evidência do defeito"
+                                class="foto-evidencia"
+                                onclick="abrirImagem(this.src)"
+                            >
+
+                            {% else %}
+
+                            <span class="sem-foto">
+                                Sem foto
+                            </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <td class="ciclo">
+
+                            {{ registro[4] or '-' }}
+
+                        </td>
+
+
+                        <td class="data">
+
+                            {{ registro[5] or '-' }}
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        {% else %}
+
+        <div class="sem-registros">
+
+            <div class="icone-vazio">
+                📋
+            </div>
+
+            <h3>Nenhum registro encontrado</h3>
+
+            <p>
+                Ainda não existem defeitos cadastrados.
+            </p>
+
+            <a
+                href="{{ url_for('index') }}"
+                class="botao-cadastrar"
+            >
+                Cadastrar primeiro defeito
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </main>
+
+
+    <!-- Modal para visualizar a imagem -->
+
+    <div
+        id="modal-imagem"
+        class="modal"
+        onclick="fecharImagem()"
+    >
+
+        <span class="fechar">
+            &times;
+        </span>
+
+        <img
+            id="imagem-ampliada"
+            class="imagem-ampliada"
+            alt="Imagem ampliada"
+        >
+
+    </div>
+
+
+    <script>
+
+        function abrirImagem(src) {
+
+            const modal =
+                document.getElementById("modal-imagem");
+
+            const imagem =
+                document.getElementById("imagem-ampliada");
+
+            imagem.src = src;
+
+            modal.classList.add("ativo");
+        }
+
+
+        function fecharImagem() {
+
+            const modal =
+                document.getElementById("modal-imagem");
+
+            modal.classList.remove("ativo");
+        }
+
+
+        document.addEventListener(
+            "keydown",
+            function(event) {
+
+                if (event.key === "Escape") {
+
+                    fecharImagem();
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+
+</html>
